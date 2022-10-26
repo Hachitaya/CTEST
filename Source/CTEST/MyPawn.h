@@ -3,23 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "MyActor.generated.h"
-
-//new custom category
-DECLARE_LOG_CATEGORY_EXTERN(LogMyActor, Log, All);
-DECLARE_LOG_CATEGORY_EXTERN(MyLogActor, Log, All);
-
-
+#include "GameFramework/Pawn.h"
+#include "MyPawn.generated.h"
 
 UCLASS()
-class CTEST_API AMyActor : public AActor
+class CTEST_API AMyPawn : public APawn
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AMyActor();
+
+public:
+	// Sets default values for this pawn's properties
+	AMyPawn();
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,5 +22,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

@@ -13,5 +13,7 @@ UCLASS()
 class CTEST_API ACTESTGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+public:
+	ACTESTGameModeBase();
+	virtual void BeginPlay() override;
 };
