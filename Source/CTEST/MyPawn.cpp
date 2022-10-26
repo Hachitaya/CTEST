@@ -4,6 +4,12 @@
 #include "MyPawn.h"
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
+#include "MyActor.h"
+#include "MyActor2.h"
+#include "EngineUtils.h"
+#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
+#include "particles/ParticleSystem.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
@@ -43,7 +49,8 @@ void AMyPawn::BeginPlay()
 }
 
 // Called every frame
-void AMyPawn::Tick(float DeltaTime)
+void AMyPawn::Tick(float DeltaTime
+)
 {
 	Super::Tick(DeltaTime);
 
@@ -54,5 +61,69 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis("MoveForward", this, &AMyPawn::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AMyPawn::MoveRight);
+	
+	PlayerInputComponent->BindAction("AddSphere", IE_Pressed, this, &AMyPawn::AddSphere);
+	PlayerInputComponent->BindAction("SpawnActor", IE_Pressed, this, &AMyPawn::SpawnMyActor);
+	PlayerInputComponent->BindAction("SpawnActor2", IE_Pressed, this, &AMyPawn::SpawnMyActor2);
+	PlayerInputComponent->BindAction("Explosion", IE_Pressed, this, &AMyPawn::Explosion);
 }
 
+void AMyPawn::MoveForward(float Value)
+{
+	AddActorWorldOffset(FVector(Value, 0, 0));
+}
+
+void AMyPawn::MoveRight(float Value)
+{
+	AddActorWorldOffset(FVector(0, Value, 0));
+}
+
+void AMyPawn::AddSphere()
+{
+	UStaticMeshComponent* NewSphere = NewObject<UStaticMeshComponent>(this,
+		UStaticMeshComponent::StaticClass(), FName("AddSphere"));
+	if (NewSphere)
+	{
+		UStaticMesh* mesh = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
+		UMaterial* mat = LoadObject<UMaterial>(nullptr, TEXT("MMaterial'/Game/StarterContent/Materials/M_AssetPlatform.M_AssetPlatform'"));
+
+		NewSphere->AttachTo(RootComponent, NAME_None, EAttachLocation::SnapToTarget);
+		NewSphere->SetRelativeLocation(FVector(0, 0, 100));
+		NewSphere->SetMaterial(0, mat);
+		NewSphere->SetStaticMesh(mesh);
+		NewSphere->RegisterComponent();
+	}
+}
+
+void AMyPawn::SpawnMyActor()
+{
+	//FActorSpawnParameters()
+
+	GetWorld()->SpawnActor<AActor>(AMyActor::StaticClass(), K2_GetActorLocation(), K2_GetActorRotation());
+}
+
+void AMyPawn::SpawnMyActor2()
+{
+	GetWorld()->SpawnActor<AActor>(AMyActor2::StaticClass(), K2_GetActorLocation(), K2_GetActorRotation());
+	
+}
+
+void AMyPawn::Explosion()
+{
+
+	UParticleSystem* FX_Explosion = LoadObject<UParticleSystem>(nullptr, TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
+
+
+	for (TActorIterator<AMyActor> actor(GetWorld()); actor; ++actor)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GWorld, FX_Explosion, actor->GetActorTransform());
+		actor->Destroy();
+	}
+	for (AMyActor2* actor2 : TActorRange<AMyActor2>(GetWorld()))
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GWorld, FX_Explosion, actor2->GetActorTransform());
+		actor2->Destroy();
+	}
+}
