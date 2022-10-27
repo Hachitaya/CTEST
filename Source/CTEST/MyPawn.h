@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "MyPawn.generated.h"
 
+
 UCLASS()
 class CTEST_API AMyPawn : public APawn
 {
@@ -39,6 +40,15 @@ public:
 	void Explosion();
 
 	void SpawnTimer();
+
+	UFUNCTION()
+	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamagerCauser);
 
 };
 

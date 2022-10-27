@@ -18,7 +18,7 @@ ATimerTest::ATimerTest()
 	CountdownTime = 3;
 	CountdownText->SetText(FString::FromInt(CountdownTime));
 	
-
+	MyString = TEXT("asdf");
 
 }
 
@@ -28,7 +28,7 @@ void ATimerTest::BeginPlay()
 	Super::BeginPlay();
 
 
-	GetWorldTimerManager().SetTimer(TimerTestHandle, this, &ATimerTest::TimerPractice, 1.f, true, 0.f);
+	GetWorldTimerManager().SetTimer(TimerTestHandle, this, &ATimerTest::AdvanceTimer, 1.f, true, 1.f);
 
 
 
@@ -48,8 +48,31 @@ void ATimerTest::TimerPractice()
 	--CountdownTime;
 	if (CountdownTime<0)
 	{
-		CountdownText->SetText(TEXT("Go!"));
+		CountdownText->SetText(MyString);
 		GetWorldTimerManager().ClearTimer(TimerTestHandle);
 	}
+}
+
+
+void ATimerTest::UpdateTimerDisplay()
+{
+	CountdownText->SetText(FString::FromInt(FMath::Max(CountdownTime, 0)));
+}
+
+void ATimerTest::AdvanceTimer()
+{
+	--CountdownTime;
+	UpdateTimerDisplay();
+	if (CountdownTime < 1)
+	{
+		GetWorldTimerManager().ClearTimer(TimerTestHandle);
+		CountdownHasFinished();
+	}
+}
+
+
+void ATimerTest::CountdownHasFinished_Implementation()
+{
+	CountdownText->SetText(MyString);
 }
 

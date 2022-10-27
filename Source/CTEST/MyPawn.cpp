@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "TimerTest.h"
+#include "HitActor.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
@@ -39,6 +40,10 @@ AMyPawn::AMyPawn()
 	UCameraComponent* FollowCamera =
 		CreateDefaultSubobject<UCameraComponent>(TEXT("GameCamera"));
 	FollowCamera->AttachTo(CameraArm);
+
+
+	this->OnActorHit.AddDynamic(this, &AMyPawn::OnHit);
+	Mesh->OnComponentHit.AddDynamic(this, &AMyPawn::OnComponentHit);
 
 }
 
@@ -132,5 +137,31 @@ void AMyPawn::Explosion()
 
 void AMyPawn::SpawnTimer()
 {
-	GetWorld()->SpawnActor<AActor>(ATimerTest::StaticClass(), K2_GetActorLocation(), K2_GetActorRotation());
+	GetWorld()->SpawnActor<AActor>(ATimerTest::StaticClass(), (K2_GetActorLocation() + FVector(0,0,100)), (K2_GetActorRotation()+ FRotator(0,180,0)));
 }
+
+void AMyPawn::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+
+	/*if (OtherActor == Cast<AHitActor>(OtherActor))*/
+	
+		TakeDamage(10, FDamageEvent(), NULL, this);
+
+
+}
+
+void AMyPawn::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
+{
+	TakeDamage(10, FDamageEvent(), NULL, this);
+
+}
+
+
+
+float AMyPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamagerCauser)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("TakeDamage"));
+	return 0.f;
+}
+
+

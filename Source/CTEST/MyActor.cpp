@@ -46,7 +46,7 @@ void AMyActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AddActorLocalOffset(FVector(0, 0, 1));
-	//UE_LOG(LogActor, Warning, TEXT("MyActor Tick"));
+	//UE_LOG(LogMyActor, Warning, TEXT("MyActor Tick"));
 	//UE_LOG(MyLogActor, Display, TEXT("Custom Log"));
 
 	

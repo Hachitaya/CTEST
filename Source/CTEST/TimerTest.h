@@ -27,6 +27,17 @@ public:
 	class UTextRenderComponent* CountdownText;
 
 	FTimerHandle TimerTestHandle;
+	UPROPERTY(EditAnywhere)
 	int CountdownTime;
 	void TimerPractice();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString MyString;
+
+	void UpdateTimerDisplay();
+
+	void AdvanceTimer();
+	UFUNCTION(BlueprintNativeEvent)
+	void CountdownHasFinished();
+	 
 };
