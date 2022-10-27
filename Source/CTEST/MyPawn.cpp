@@ -9,7 +9,8 @@
 #include "EngineUtils.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
-#include "particles/ParticleSystem.h"
+#include "Particles/ParticleSystem.h"
+#include "TimerTest.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
@@ -17,14 +18,14 @@ AMyPawn::AMyPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> M_Mesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> M_Mesh(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
 	UStaticMeshComponent* Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Box"));
 	RootComponent = Mesh;
 
 	if (M_Mesh.Succeeded())
 	{
 		Mesh->SetStaticMesh(M_Mesh.Object);
-	}
+	} 
 
 	USpringArmComponent* CameraArm = CreateDefaultSubobject<USpringArmComponent>
 		(TEXT("CameraSpringArm"));
@@ -68,12 +69,13 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("SpawnActor", IE_Pressed, this, &AMyPawn::SpawnMyActor);
 	PlayerInputComponent->BindAction("SpawnActor2", IE_Pressed, this, &AMyPawn::SpawnMyActor2);
 	PlayerInputComponent->BindAction("Explosion", IE_Pressed, this, &AMyPawn::Explosion);
+	PlayerInputComponent->BindAction("SpawnTimer", IE_Pressed, this, &AMyPawn::SpawnTimer);
 }
 
 void AMyPawn::MoveForward(float Value)
 {
 	AddActorWorldOffset(FVector(Value, 0, 0));
-}
+} 
 
 void AMyPawn::MoveRight(float Value)
 {
@@ -85,7 +87,7 @@ void AMyPawn::AddSphere()
 	UStaticMeshComponent* NewSphere = NewObject<UStaticMeshComponent>(this,
 		UStaticMeshComponent::StaticClass(), FName("AddSphere"));
 	if (NewSphere)
-	{
+	{                 
 		UStaticMesh* mesh = LoadObject<UStaticMesh>(nullptr, TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 		UMaterial* mat = LoadObject<UMaterial>(nullptr, TEXT("MMaterial'/Game/StarterContent/Materials/M_AssetPlatform.M_AssetPlatform'"));
 
@@ -119,11 +121,16 @@ void AMyPawn::Explosion()
 	for (TActorIterator<AMyActor> actor(GetWorld()); actor; ++actor)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GWorld, FX_Explosion, actor->GetActorTransform());
-		actor->Destroy();
+		actor->Destroy();  
 	}
 	for (AMyActor2* actor2 : TActorRange<AMyActor2>(GetWorld()))
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GWorld, FX_Explosion, actor2->GetActorTransform());
 		actor2->Destroy();
 	}
+}
+
+void AMyPawn::SpawnTimer()
+{
+	GetWorld()->SpawnActor<AActor>(ATimerTest::StaticClass(), K2_GetActorLocation(), K2_GetActorRotation());
 }

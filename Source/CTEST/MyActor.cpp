@@ -2,6 +2,9 @@
 
 
 #include "MyActor.h"
+#include <Kismet/GameplayStatics.h>
+#include "Particles/ParticleSystem.h"
+
 
 DEFINE_LOG_CATEGORY(LogMyActor)
 DEFINE_LOG_CATEGORY(MyLogActor)
@@ -33,7 +36,8 @@ AMyActor::AMyActor()
 void AMyActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	GetWorldTimerManager().SetTimer(TimerTestHandle, this, &AMyActor::TimerTest, 3.f, true);
+
 }
 
 // Called every frame
@@ -46,5 +50,14 @@ void AMyActor::Tick(float DeltaTime)
 	//UE_LOG(MyLogActor, Display, TEXT("Custom Log"));
 
 	
+}
+
+void AMyActor::TimerTest()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("TimerTest"));
+	UParticleSystem* FX_Explosion = LoadObject<UParticleSystem>(nullptr, TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Explosion.P_Explosion'"));
+	UGameplayStatics::SpawnEmitterAtLocation(GWorld, FX_Explosion, this->GetActorTransform());
+
+	Destroy();
 }
 

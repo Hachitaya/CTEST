@@ -4,22 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "MyActor.generated.h"
-
-//new custom category
-DECLARE_LOG_CATEGORY_EXTERN(LogMyActor, Log, All);
-DECLARE_LOG_CATEGORY_EXTERN(MyLogActor, Log, All);
-
-
+#include "TimerTest.generated.h"
 
 UCLASS()
-class CTEST_API AMyActor : public AActor
+class CTEST_API ATimerTest : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AMyActor();
+	ATimerTest();
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,8 +23,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void TimerTest();
+	UPROPERTY()
+	class UTextRenderComponent* CountdownText;
+
 	FTimerHandle TimerTestHandle;
-
-
+	int CountdownTime;
+	void TimerPractice();
 };
