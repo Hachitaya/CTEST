@@ -4,10 +4,11 @@
 #include "CTESTGameModeBase.h"
 #include "MyPawn.h"
 #include "MyActor.h"
+#include "MyDefaultPawn.h"
 
 ACTESTGameModeBase::ACTESTGameModeBase()
 {
-	DefaultPawnClass = AMyPawn::StaticClass();
+	DefaultPawnClass = AMyDefaultPawn::StaticClass();
 }
 
 void ACTESTGameModeBase::BeginPlay()

@@ -38,5 +38,6 @@ void ASpawnActor::Spawn()
 void ASpawnActor::TimerCall()
 {
 	FVector RandomLocation = FMath::RandPointInBox(SpawnBox->Bounds.GetBox());
-	GWorld->SpawnActor<AActor>(AHitActor::StaticClass(), RandomLocation, FRotator(0, 0, 0));
+	//GWorld->SpawnActor<AActor>(AHitActor::StaticClass(), RandomLocation, FRotator(0, 0, 0));
+	GWorld->SpawnActor<AHitActor>(RandomLocation, FRotator(0, 0, 0));
 }
