@@ -3,6 +3,11 @@
 
 #include "MyDefaultPawn.h"
 #include "GameFramework/Pawn.h"
+#include <Engine/Private/KismetTraceUtils.h>
+#include "DrawDebugHelpers.h"
+#include "Kismet/KismetSystemLibrary.h"
+
+using namespace EDrawDebugTrace;
 
 AMyDefaultPawn::AMyDefaultPawn()
 {
@@ -59,6 +64,8 @@ void AMyDefaultPawn::Explosion()
 	GetWorld()->DebugDrawTraceTag = TraceTag;
 	TraceParams.TraceTag = TraceTag;
 
+	EDrawDebugTrace::Type debug = EDrawDebugTrace::Type(ForDuration);
+
 	GWorld->LineTraceSingleByChannel(Hit, Start, End, ECC_Camera, TraceParams);
 
 	if (Hit.GetActor())
@@ -66,4 +73,5 @@ void AMyDefaultPawn::Explosion()
 		Hit.GetActor()->TakeDamage(10, FDamageEvent(), NULL, this);
 		Hit.GetActor()->Destroy();
 	}
+	//DrawDebugLineTraceSingle(GWorld, Start, End, debug, 0, Hit, FLinearColor(255,0,0), FLinearColor(0, 0, 255), 10.f);
 }
