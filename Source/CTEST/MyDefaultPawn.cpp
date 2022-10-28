@@ -2,6 +2,7 @@
 
 
 #include "MyDefaultPawn.h"
+#include "GameFramework/Pawn.h"
 
 AMyDefaultPawn::AMyDefaultPawn()
 {
@@ -28,10 +29,41 @@ AMyDefaultPawn::AMyDefaultPawn()
 
 void AMyDefaultPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	PlayerInputComponent->BindAction("Extplosion", IE_Pressed, this, &AMyDefaultPawn::Explosion);
+	PlayerInputComponent->BindAction("Explosion", IE_Pressed, this, &AMyDefaultPawn::Explosion);
+
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	//PlayerInputComponent->BindAxis("MoveForward", this, &AMyDefaultPawn::MoveForward);
+	//PlayerInputComponent->BindAxis("MoveRight", this, &AMyDefaultPawn::MoveRight);
+	//PlayerInputComponent->BindAxis("Turn", this, &AMyDefaultPawn::AddControllerYawInput);
+	//PlayerInputComponent->BindAxis("LookUp", this, &AMyDefaultPawn::AddControllerPitchInput);
 }
 
 void AMyDefaultPawn::Explosion()
 {
+	const FVector Start = GetActorLocation();
+	const FVector Direction = GetActorRotation().Vector();
+	const FVector End = Start + (Direction * 10000.f);
+	//result
+	FHitResult Hit;
+	//trace parameter
+	FCollisionQueryParams TraceParams(FName(TEXT("")), true, this);
+	
+	TraceParams.bTraceComplex = true;
 
+	TraceParams.bReturnFaceIndex = false;
+	//ignore self
+	TraceParams.AddIgnoredActor(this);
+	//debug
+	FName TraceTag = TEXT("Draw");
+	GetWorld()->DebugDrawTraceTag = TraceTag;
+	TraceParams.TraceTag = TraceTag;
+
+	GWorld->LineTraceSingleByChannel(Hit, Start, End, ECC_Camera, TraceParams);
+
+	if (Hit.GetActor())
+	{ 
+		Hit.GetActor()->TakeDamage(10, FDamageEvent(), NULL, this);
+		Hit.GetActor()->Destroy();
+	}
 }

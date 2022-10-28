@@ -14,8 +14,12 @@ class CTEST_API AMyDefaultPawn : public ADefaultPawn
 {
 	GENERATED_BODY()
 public:
+
 	AMyDefaultPawn();
+
+	UFUNCTION()
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
 	void Explosion();
 
 };
