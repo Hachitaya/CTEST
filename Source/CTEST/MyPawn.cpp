@@ -12,6 +12,7 @@
 #include "Particles/ParticleSystem.h"
 #include "TimerTest.h"
 #include "HitActor.h"
+#include "MyActor2.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
@@ -27,6 +28,9 @@ AMyPawn::AMyPawn()
 	{
 		Mesh->SetStaticMesh(M_Mesh.Object);
 	} 
+
+	Mesh->SetCollisionObjectType(ECC_Pawn);
+	Mesh->SetGenerateOverlapEvents(true);
 
 	USpringArmComponent* CameraArm = CreateDefaultSubobject<USpringArmComponent>
 		(TEXT("CameraSpringArm"));
@@ -128,11 +132,25 @@ void AMyPawn::Explosion()
 		UGameplayStatics::SpawnEmitterAtLocation(GWorld, FX_Explosion, actor->GetActorTransform());
 		actor->Destroy();  
 	}
-	for (AMyActor2* actor2 : TActorRange<AMyActor2>(GetWorld()))
+	//for (AMyActor2* actor2 : TActorRange<AMyActor2>(GetWorld()))
+	//{
+	//	UGameplayStatics::SpawnEmitterAtLocation(GWorld, FX_Explosion, actor2->GetActorTransform());
+	//	actor2->Destroy();
+	//}
+
+	for (AActor* actors : TActorRange<AActor>(GetWorld()))
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GWorld, FX_Explosion, actor2->GetActorTransform());
-		actor2->Destroy();
+
+		if (actors == Cast<AMyActor2>(actors))
+		{
+			AMyActor2* find;
+			find = Cast<AMyActor2>(actors);
+			find->bIsSmaller = true;
+		}
 	}
+
+	
+
 }
 
 void AMyPawn::SpawnTimer()
@@ -143,7 +161,6 @@ void AMyPawn::SpawnTimer()
 void AMyPawn::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
 
-	/*if (OtherActor == Cast<AHitActor>(OtherActor))*/
 	
 		TakeDamage(10, FDamageEvent(), NULL, this);
 
@@ -152,7 +169,7 @@ void AMyPawn::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse
 
 void AMyPawn::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
-	TakeDamage(10, FDamageEvent(), NULL, this);
+
 
 }
 
@@ -160,7 +177,7 @@ void AMyPawn::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 
 float AMyPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamagerCauser)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("TakeDamage"));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("TakeDamage"));
 	return 0.f;
 }
 

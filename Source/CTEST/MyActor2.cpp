@@ -19,7 +19,7 @@ AMyActor2::AMyActor2()
 		Mesh->SetStaticMesh(M_Mesh.Object);
 	}
 	
-
+	bIsSmaller = false;
 
 }
 
@@ -36,5 +36,9 @@ void AMyActor2::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	AddActorLocalOffset(FVector(20, 0, 0));
 	AddActorLocalRotation(FRotator(0, 0, 5));
+	if (bIsSmaller)
+	{
+		SetActorScale3D(GetActorScale3D() * 0.95f);
+	}
 }
 

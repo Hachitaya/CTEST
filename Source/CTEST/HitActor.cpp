@@ -5,6 +5,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "HitActor.h"
 #include "MyPawn.h"
+#include "GameFramework/DamageType.h"
+#include "MyActorComponent.h"
+
 
 // Sets default values
 AHitActor::AHitActor()
@@ -21,12 +24,23 @@ AHitActor::AHitActor()
 		Mesh->SetStaticMesh(M_Mesh.Object);
 	}
 
-	Mesh->SetSimulatePhysics(true);
+	Mesh->SetSimulatePhysics(false);
 	Mesh->SetNotifyRigidBodyCollision(true);
 
-	this->OnActorHit.AddDynamic(this, &AHitActor::OnHit);
-	Mesh->OnComponentHit.AddDynamic(this, &AHitActor::OnComponentHit);
+	//this->OnActorHit.AddDynamic(this, &AHitActor::OnHit);
+	//Mesh->OnComponentHit.AddDynamic(this, &AHitActor::OnComponentHit);
+	Mesh->OnComponentBeginOverlap.AddDynamic(this, &AHitActor::OnOverlapBegin);
 
+	//Mesh->SetGenerateOverlapEvents(true);
+
+	Mesh->SetCollisionObjectType(ECC_WorldDynamic);
+
+	Mesh->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	Mesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+
+	UMyActorComponent* Chase = CreateDefaultSubobject<UMyActorComponent>(TEXT("Chase"));
+
+	Chase->ComponentTags.Add(FName(TEXT("Move")));
 
 }
 
@@ -34,6 +48,17 @@ AHitActor::AHitActor()
 void AHitActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (UActorComponent* actComp : GetComponents())
+	{
+		if (actComp->ComponentHasTag(FName(TEXT("Move"))))
+		{
+			UMyActorComponent* myActComp = Cast<UMyActorComponent>(actComp);
+			AActor* target = GWorld->GetFirstPlayerController()->GetPawn();
+			myActComp->SetFollowTarget(target, 0.5f);
+		}
+	}
+	SetLifeSpan(2);
 	
 }
 
@@ -52,20 +77,27 @@ void AHitActor::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpul
 	AMyPawn* test = Cast<AMyPawn>(OtherActor);
 	if (test)
 	{
-		OtherActor->TakeDamage(10, FDamageEvent(), NULL, this);
+		UGameplayStatics::ApplyDamage(OtherActor, 50.f, NULL, this, nullptr);
 	}
+	if (OtherActor == Cast<AMyPawn>(OtherActor))
+	{
+		OtherActor->TakeDamage(10, FDamageEvent(), NULL, this);
 
-	//if (OtherActor == Cast<AMyPawn>(OtherActor))
-	//{
-	//	OtherActor->TakeDamage(10, FDamageEvent(), NULL, this);
-	//}
-
-
-	
+	}
 }
 
 
 void AHitActor::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("why"));
+}
+
+void AHitActor::OnOverlapBegin(UPrimitiveComponent* OverlapComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	AMyPawn* MyPawn = Cast<AMyPawn>(OtherActor);
+	if (MyPawn)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("why"));
+	}
+
 }

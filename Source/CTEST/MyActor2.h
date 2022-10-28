@@ -28,4 +28,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UProjectileMovementComponent* Movement;
+
+	bool bIsSmaller;
 };

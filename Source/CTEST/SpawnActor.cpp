@@ -19,7 +19,7 @@ ASpawnActor::ASpawnActor()
 void ASpawnActor::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpawnActor::TimerCall, 3.f, true, 1.f);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpawnActor::TimerCall, 3.f, true, 1.f); 
 }
 
 // Called every frame

@@ -31,7 +31,6 @@ void ATimerTest::BeginPlay()
 	GetWorldTimerManager().SetTimer(TimerTestHandle, this, &ATimerTest::AdvanceTimer, 1.f, true, 1.f);
 
 
-
 }
 
 // Called every frame
